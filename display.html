@@ -24,10 +24,11 @@
       left: 10px;
       z-index: 10000;
     }
-    #toggle-size-btn {
+    #toggle-controls button {
       padding: 8px 12px;
       font-size: 14px;
       cursor: pointer;
+      margin-right: 10px;
     }
     /* Unity コンテナ：デフォルトはブラウザ全体に表示 */
     #unity-container.fullsize {
@@ -71,9 +72,10 @@
   </style>
 </head>
 <body>
-  <!-- 切り替えボタン -->
+  <!-- 切り替え用ボタン（サイズ切替とフルスクリーン切替の両方を配置） -->
   <div id="toggle-controls">
     <button id="toggle-size-btn">小さくする</button>
+    <button id="toggle-fullscreen-btn">フルスクリーンオン</button>
   </div>
 
   <!-- 任意のヘッディングや設定への戻りボタン -->
@@ -112,13 +114,12 @@
     loadSettings();
     startCamera();
 
-    // 切り替え用ボタンの処理
+    // 切り替え用ボタン（サイズ切替）の処理
     const toggleBtn = document.getElementById('toggle-size-btn');
     const unityContainer = document.getElementById('unity-container');
-    // 初期状態は fullsize とする
     let isFullSize = true;
     toggleBtn.addEventListener('click', function() {
-      if(isFullSize) {
+      if (isFullSize) {
         // 現在全体表示 → 小さいサイズに切り替え
         unityContainer.classList.remove('fullsize');
         unityContainer.classList.add('small');
@@ -130,6 +131,26 @@
         toggleBtn.textContent = '小さくする';
       }
       isFullSize = !isFullSize;
+    });
+
+    // フルスクリーン切替用ボタンの処理
+    const toggleFullscreenBtn = document.getElementById('toggle-fullscreen-btn');
+    toggleFullscreenBtn.addEventListener('click', function() {
+      if (!document.fullscreenElement) {
+        // フルスクリーン表示に切り替え
+        unityContainer.requestFullscreen().then(() => {
+          toggleFullscreenBtn.textContent = 'フルスクリーンオフ';
+        }).catch(err => {
+          console.error(`フルスクリーンの開始に失敗しました: ${err.message}`);
+        });
+      } else {
+        // フルスクリーン表示の解除
+        document.exitFullscreen().then(() => {
+          toggleFullscreenBtn.textContent = 'フルスクリーンオン';
+        }).catch(err => {
+          console.error(`フルスクリーンの解除に失敗しました: ${err.message}`);
+        });
+      }
     });
 
     // Unity WebGL Loader
