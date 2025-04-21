@@ -12,6 +12,57 @@ var canvas;
 var ctx;
 var resultDiv;
 
+// Calibration storage
+window._calibration = { leftEye: null, rightEye: null };
+const calibration = {
+  startCalibration: function() {
+    const resultEl = document.getElementById('calibrationResult');
+    // Disable inputs
+    ['focalLength','diagonalFov'].forEach(id => document.getElementById(id).disabled = true);
+    let countdown = 10;
+    resultEl.textContent = `Calibration will start in ${countdown} seconds. Please position your face 50 cm directly in front of the camera.`;
+    const timer = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        resultEl.textContent = `Calibration will start in ${countdown} seconds. Please position your face 50 cm directly in front of the camera.`;
+      } else {
+        clearInterval(timer);
+        calibration.doCalibrate();
+      }
+    }, 1000);
+  },
+  doCalibrate: function() {
+    const resultEl = document.getElementById('calibrationResult');
+    const left = window._calibration.leftEye;
+    const right = window._calibration.rightEye;
+    if (!left || !right) {
+      resultEl.textContent = 'Eyes not detected. Please adjust the camera.';
+      ['focalLength','diagonalFov'].forEach(id => document.getElementById(id).disabled = false);
+      return;
+    }
+    const dx = left.x - right.x;
+    const dy = left.y - right.y;
+    const eyeDistancePixels = Math.hypot(dx, dy);
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    const pixelSize = sensorWidth / vw;
+    const distanceMeters = 0.5;
+    // Adjust focal length
+    const newFocal = (distanceMeters * 1000) * (eyeDistancePixels * pixelSize) / ipd;
+    document.getElementById('focalLength').value = newFocal.toFixed(3);
+    // Adjust diagonal FOV
+    const censorEyeDist = pixelSize * eyeDistancePixels;
+    const ipdHFovDeg = Math.atan(censorEyeDist / 2 / newFocal) * 2 * (180/Math.PI);
+    const hFov = ipdHFovDeg * (vw / eyeDistancePixels);
+    const vFov = hFov * (vh / vw);
+    const dFov = Math.hypot(hFov, vFov);
+    document.getElementById('diagonalFov').value = Math.floor(dFov);
+    // Re-enable inputs
+    ['focalLength','diagonalFov'].forEach(id => document.getElementById(id).disabled = false);
+    resultEl.textContent = 'Calibration complete';
+  }
+};
+
 // Kalman filters
 class KalmanFilter {
   constructor(Q,R,P,X){this.Q=Q;this.R=R;this.P=P;this.X=X;}
@@ -197,6 +248,9 @@ function onResults(results){
   
   const leftEyeCenter = getEyeCenter(landmarks, 386, 374);
   const rightEyeCenter = getEyeCenter(landmarks, 159, 145);
+  // Store for calibration
+  window._calibration.leftEye = leftEyeCenter;
+  window._calibration.rightEye = rightEyeCenter;
   const dx = leftEyeCenter.x - rightEyeCenter.x;
   const dy = leftEyeCenter.y - rightEyeCenter.y;
   const eyeDistancePixels = Math.sqrt(dx * dx + dy * dy);

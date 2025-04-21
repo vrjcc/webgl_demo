@@ -13,12 +13,13 @@
     label { display: block; margin: 8px 0; }
     #videoContainer { width: 640px; height: 360px; border: 1px solid #ccc; position: relative; }
     video, canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    #calibrationResult { margin: 12px 0; color: #007acc; }
   </style>
 </head>
 <body>
   <h1>設定</h1>
   <form id="paramForm">
-    <label>focalLength: <input type="number" id="focalLength" step="0.1" value="5"></label>
+    <label>focalLength: <input type="number" id="focalLength" step="0.001" value="5"></label>
     <label>sensorWidth: <input type="number" id="sensorWidth" step="0.1" value="5"></label>
     <label>ipd: <input type="number" id="ipd" step="1" value="65"></label>
     <label>diagonalFov: <input type="number" id="diagonalFov" step="1" value="78"></label>
@@ -26,16 +27,27 @@
     <label>requestedHeight: <input type="number" id="requestedHeight" step="10" value="360"></label>
     <label>_fps: <input type="number" id="_fps" step="10" value="30"></label>
     <label>Camera: <select id="cameraSelect"></select></label>
-    <button type="submit">決定</button>
+    <button type="button" id="calibrate-btn">キャリブレート</button>
+    <button type="submit">OK</button>
   </form>
 
-  <div id="videoContainer"><video id="video" playsinline></video><canvas id="canvas"></canvas></div>
+  <div id="calibrationResult"></div>
+
+  <div id="videoContainer">
+    <video id="video" playsinline></video>
+    <canvas id="canvas"></canvas>
+  </div>
   <script>
     loadSettings(); populateCameraSelect();
     document.getElementById('paramForm').addEventListener('submit', e => {
       e.preventDefault(); saveSettings(); window.location = 'display.html';
     });
     startCamera();
+
+    // キャリブレーションボタン
+    document.getElementById('calibrate-btn').addEventListener('click', () => {
+      calibration.startCalibration();
+    });
   </script>
 </body>
 </html>
