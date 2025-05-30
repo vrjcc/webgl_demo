@@ -1,1 +1,318 @@
-const _0x52400d=_0x823f;(function(_0xfc7e41,_0x41ab70){const _0x3c2240=_0x823f,_0x45f847=_0xfc7e41();while(!![]){try{const _0x18ebaf=-parseInt(_0x3c2240(0x9b))/0x1*(-parseInt(_0x3c2240(0xc4))/0x2)+-parseInt(_0x3c2240(0xa5))/0x3*(-parseInt(_0x3c2240(0xbe))/0x4)+parseInt(_0x3c2240(0xa2))/0x5+parseInt(_0x3c2240(0xc3))/0x6+-parseInt(_0x3c2240(0xa6))/0x7+parseInt(_0x3c2240(0xd8))/0x8*(parseInt(_0x3c2240(0xab))/0x9)+-parseInt(_0x3c2240(0x9d))/0xa*(parseInt(_0x3c2240(0xb8))/0xb);if(_0x18ebaf===_0x41ab70)break;else _0x45f847['push'](_0x45f847['shift']());}catch(_0xc3e75e){_0x45f847['push'](_0x45f847['shift']());}}}(_0x2871,0x4614b));const sensorWidth=0x1,relativeFocalLength=parseFloat(localStorage[_0x52400d(0xd1)](_0x52400d(0xb6)))||0x1,focalLength=sensorWidth*relativeFocalLength,ipd=parseFloat(localStorage['getItem'](_0x52400d(0xa0)))||0x41,diagonalFov=parseFloat(localStorage[_0x52400d(0xd1)](_0x52400d(0xc8)))||0x4e;var video,canvas,ctx,resultDiv;window['_calibration']={'leftEye':null,'rightEye':null};const calibration={'startCalibration':function(){const _0x55c7e1=_0x52400d,_0x200429=document[_0x55c7e1(0xb1)](_0x55c7e1(0x9c));['relativeFocalLength',_0x55c7e1(0xc8)]['forEach'](_0x4d106f=>document['getElementById'](_0x4d106f)['disabled']=!![]);let _0x2644d2=0xa;_0x200429[_0x55c7e1(0xcf)]=_0x55c7e1(0xd3)+_0x2644d2+'\u00a0seconds.';const _0x140c0a=setInterval(()=>{const _0x28f0ba=_0x55c7e1;_0x2644d2--,_0x2644d2>0x0?_0x200429[_0x28f0ba(0xcf)]=_0x28f0ba(0xd3)+_0x2644d2+_0x28f0ba(0x97):(clearInterval(_0x140c0a),calibration['doCalibrate']());},0x3e8);},'doCalibrate':function(){const _0x2e8634=_0x52400d,_0x18fe9b=document['getElementById'](_0x2e8634(0x9c)),_0x21ddbb=window[_0x2e8634(0xda)]['leftEye'],_0x13dc45=window[_0x2e8634(0xda)]['rightEye'];console[_0x2e8634(0xba)](_0x21ddbb+':'+_0x13dc45);if(!_0x21ddbb||!_0x13dc45){_0x18fe9b['textContent']='Eyes\x20not\x20detected.\x20Please\x20adjust\x20the\x20camera.',[_0x2e8634(0xb6),'diagonalFov'][_0x2e8634(0xaa)](_0x378a6b=>document[_0x2e8634(0xb1)](_0x378a6b)[_0x2e8634(0xd6)]=![]);return;}const _0x205f48=_0x21ddbb['x']-_0x13dc45['x'],_0x5ce26b=_0x21ddbb['y']-_0x13dc45['y'],_0x5325d3=Math[_0x2e8634(0xca)](_0x205f48,_0x5ce26b);console['log'](_0x5325d3);const _0xf75bc4=video[_0x2e8634(0x99)],_0x1263df=video[_0x2e8634(0xcb)],_0x26753d=sensorWidth/_0xf75bc4,_0x4f5624=0.5,_0x377922=_0x4f5624*0x3e8*(_0x5325d3*_0x26753d)/ ipd;document[_0x2e8634(0xb1)]('relativeFocalLength')[_0x2e8634(0xd7)]=_0x377922['toFixed'](0x3),console[_0x2e8634(0xba)](_0x377922);const _0x2bae5f=_0x26753d*_0x5325d3,_0x1bf957=Math[_0x2e8634(0xb9)](_0x2bae5f/0x2/_0x377922)*0x2*(0xb4/Math['PI']),_0x213d8a=_0x1bf957*(_0xf75bc4/_0x5325d3),_0x3fcf90=_0x213d8a*(_0x1263df/_0xf75bc4),_0x2a0571=Math[_0x2e8634(0xca)](_0x213d8a,_0x3fcf90);document[_0x2e8634(0xb1)](_0x2e8634(0xc8))[_0x2e8634(0xd7)]=Math[_0x2e8634(0xa3)](_0x2a0571),[_0x2e8634(0xb6),'diagonalFov'][_0x2e8634(0xaa)](_0x3ec1af=>document[_0x2e8634(0xb1)](_0x3ec1af)[_0x2e8634(0xd6)]=![]),_0x18fe9b[_0x2e8634(0xcf)]=_0x2e8634(0xbc);}};class KalmanFilter{constructor(_0x38ced1,_0x513fe1,_0x3ba9ea,_0x24bbae){this['Q']=_0x38ced1,this['R']=_0x513fe1,this['P']=_0x3ba9ea,this['X']=_0x24bbae;}['update'](_0x16a800){this['P']+=this['Q'];const _0x230406=this['P']/(this['P']+this['R']);return this['X']+=_0x230406*(_0x16a800-this['X']),this['P']=(0x1-_0x230406)*this['P'],this['X'];}}const posXFilter=new KalmanFilter(0.05,0.05,0xa,0x0),posYFilter=new KalmanFilter(0.05,0.05,0xa,0x0),posZFilter=new KalmanFilter(0.05,0.5,0xa,0x0),quatXFilter=new KalmanFilter(0.005,0.1,0x1,0x0),quatYFilter=new KalmanFilter(0.005,0.1,0x1,0x0),quatZFilter=new KalmanFilter(0.005,0.1,0x1,0x0),quatWFilter=new KalmanFilter(0.005,0.1,0x1,0x1);function loadSettings(){const _0x512852=_0x52400d,_0x50ca45=[_0x512852(0xb6),'ipd',_0x512852(0xc8),'requestedWidth',_0x512852(0xcc),_0x512852(0xc0)];_0x50ca45[_0x512852(0xaa)](_0x2f25d6=>{const _0x586d14=_0x512852,_0x3b8ded=localStorage['getItem'](_0x2f25d6);_0x3b8ded!==null&&(document['getElementById'](_0x2f25d6)[_0x586d14(0xd7)]=_0x3b8ded);});}function saveSettings(){const _0x4a7191=_0x52400d,_0x3c446e=[_0x4a7191(0xb6),'ipd',_0x4a7191(0xc8),_0x4a7191(0xb7),_0x4a7191(0xcc),'_fps'];_0x3c446e[_0x4a7191(0xaa)](_0x3c306f=>{const _0x2c2e1f=_0x4a7191;localStorage[_0x2c2e1f(0xad)](_0x3c306f,document[_0x2c2e1f(0xb1)](_0x3c306f)[_0x2c2e1f(0xd7)]);});}function populateCameraSelect(){const _0x21e6ea=_0x52400d,_0x3b98b2=document['getElementById'](_0x21e6ea(0xc9));_0x3b98b2[_0x21e6ea(0xa8)]='',navigator[_0x21e6ea(0xb5)][_0x21e6ea(0xc1)]()['then'](_0x1fdcf8=>{const _0x238166=_0x21e6ea,_0x52e126=_0x1fdcf8[_0x238166(0xcd)](_0x33c41d=>_0x33c41d['kind']===_0x238166(0xb3));_0x52e126[_0x238166(0xaa)](_0x40c58e=>{const _0x15c9b5=_0x238166,_0x5a5c2b=document['createElement'](_0x15c9b5(0x9e));_0x5a5c2b[_0x15c9b5(0xd7)]=_0x40c58e[_0x15c9b5(0xa4)],_0x5a5c2b[_0x15c9b5(0xd5)]=_0x40c58e['label']||_0x15c9b5(0xc7)+(_0x3b98b2[_0x15c9b5(0xb0)]+0x1),_0x3b98b2['appendChild'](_0x5a5c2b);});})[_0x21e6ea(0xc2)](_0x34447f=>{const _0x33602b=_0x21e6ea;console[_0x33602b(0xd0)](_0x33602b(0xbb),_0x34447f);});}function subtract(_0x41f091,_0x39aca1){return{'x':_0x41f091['x']-_0x39aca1['x'],'y':_0x41f091['y']-_0x39aca1['y'],'z':_0x41f091['z']-_0x39aca1['z']};}function _0x823f(_0x2d05e1,_0x2389c9){const _0x287132=_0x2871();return _0x823f=function(_0x823fd1,_0x1041ab){_0x823fd1=_0x823fd1-0x97;let _0x519638=_0x287132[_0x823fd1];return _0x519638;},_0x823f(_0x2d05e1,_0x2389c9);}function cross(_0x591380,_0x345b8d){return{'x':_0x591380['y']*_0x345b8d['z']-_0x591380['z']*_0x345b8d['y'],'y':_0x591380['z']*_0x345b8d['x']-_0x591380['x']*_0x345b8d['z'],'z':_0x591380['x']*_0x345b8d['y']-_0x591380['y']*_0x345b8d['x']};}function dot(_0x5cd8a1,_0x815040){return _0x5cd8a1['x']*_0x815040['x']+_0x5cd8a1['y']*_0x815040['y']+_0x5cd8a1['z']*_0x815040['z'];}function length(_0x5c4360){const _0x1dcf82=_0x52400d;return Math[_0x1dcf82(0xa1)](_0x5c4360['x']*_0x5c4360['x']+_0x5c4360['y']*_0x5c4360['y']+_0x5c4360['z']*_0x5c4360['z']);}function normalize(_0x53e2e4){const _0x3964f0=length(_0x53e2e4);return _0x3964f0===0x0?{'x':0x0,'y':0x0,'z':0x0}:{'x':_0x53e2e4['x']/_0x3964f0,'y':_0x53e2e4['y']/_0x3964f0,'z':_0x53e2e4['z']/_0x3964f0};}function angleBetween(_0x57b7e6,_0x2c6e83){const _0x367e62=_0x52400d,_0x2b2e36=normalize(_0x57b7e6),_0x3b7745=normalize(_0x2c6e83);let _0x315edc=dot(_0x2b2e36,_0x3b7745);return _0x315edc=Math[_0x367e62(0xa7)](Math[_0x367e62(0xae)](_0x315edc,-0x1),0x1),Math[_0x367e62(0x9f)](_0x315edc);}function matrixToQuaternion(_0x207887){const _0x1a4b88=_0x52400d,_0x3d0752=_0x207887[0x0][0x0],_0x4ca75e=_0x207887[0x0][0x1],_0x2e90b9=_0x207887[0x0][0x2],_0x4c2af2=_0x207887[0x1][0x0],_0x3e0fed=_0x207887[0x1][0x1],_0x269949=_0x207887[0x1][0x2],_0xac100a=_0x207887[0x2][0x0],_0x391ea4=_0x207887[0x2][0x1],_0x19ce76=_0x207887[0x2][0x2];let _0x158f51=_0x3d0752+_0x3e0fed+_0x19ce76,_0x33bb83={'x':0x0,'y':0x0,'z':0x0,'w':0x1};if(_0x158f51>0x0){let _0x5a0478=Math['sqrt'](_0x158f51+0x1)*0x2;_0x33bb83['w']=0.25*_0x5a0478,_0x33bb83['x']=(_0x391ea4-_0x269949)/_0x5a0478,_0x33bb83['y']=(_0x2e90b9-_0xac100a)/_0x5a0478,_0x33bb83['z']=(_0x4c2af2-_0x4ca75e)/_0x5a0478;}else{if(_0x3d0752>_0x3e0fed&&_0x3d0752>_0x19ce76){let _0x271175=Math[_0x1a4b88(0xa1)](0x1+_0x3d0752-_0x3e0fed-_0x19ce76)*0x2;_0x33bb83['w']=(_0x391ea4-_0x269949)/_0x271175,_0x33bb83['x']=0.25*_0x271175,_0x33bb83['y']=(_0x4ca75e+_0x4c2af2)/_0x271175,_0x33bb83['z']=(_0x2e90b9+_0xac100a)/_0x271175;}else{if(_0x3e0fed>_0x19ce76){let _0x52a905=Math[_0x1a4b88(0xa1)](0x1+_0x3e0fed-_0x3d0752-_0x19ce76)*0x2;_0x33bb83['w']=(_0x2e90b9-_0xac100a)/_0x52a905,_0x33bb83['x']=(_0x4ca75e+_0x4c2af2)/_0x52a905,_0x33bb83['y']=0.25*_0x52a905,_0x33bb83['z']=(_0x269949+_0x391ea4)/_0x52a905;}else{let _0x3dcd33=Math['sqrt'](0x1+_0x19ce76-_0x3d0752-_0x3e0fed)*0x2;_0x33bb83['w']=(_0x4c2af2-_0x4ca75e)/_0x3dcd33,_0x33bb83['x']=(_0x2e90b9+_0xac100a)/_0x3dcd33,_0x33bb83['y']=(_0x269949+_0x391ea4)/_0x3dcd33,_0x33bb83['z']=0.25*_0x3dcd33;}}}return _0x33bb83;}function multiplyQuaternion(_0x214337,_0x2327b2){return{'w':_0x214337['w']*_0x2327b2['w']-_0x214337['x']*_0x2327b2['x']-_0x214337['y']*_0x2327b2['y']-_0x214337['z']*_0x2327b2['z'],'x':_0x214337['w']*_0x2327b2['x']+_0x214337['x']*_0x2327b2['w']+_0x214337['y']*_0x2327b2['z']-_0x214337['z']*_0x2327b2['y'],'y':_0x214337['w']*_0x2327b2['y']-_0x214337['x']*_0x2327b2['z']+_0x214337['y']*_0x2327b2['w']+_0x214337['z']*_0x2327b2['x'],'z':_0x214337['w']*_0x2327b2['z']+_0x214337['x']*_0x2327b2['y']-_0x214337['y']*_0x2327b2['x']+_0x214337['z']*_0x2327b2['w']};}function eulerToQuaternion(_0x2ab999,_0x3639dc,_0x230a5b){const _0x32d1cd=_0x52400d,_0x4d2fe5=_0x2ab999*Math['PI']/0xb4,_0x39c17a=_0x3639dc*Math['PI']/0xb4,_0x14e161=_0x230a5b*Math['PI']/0xb4,_0x31db00=Math[_0x32d1cd(0xaf)](_0x4d2fe5/0x2),_0x4dee33=Math[_0x32d1cd(0xbf)](_0x4d2fe5/0x2),_0x5de373=Math['cos'](_0x39c17a/0x2),_0x56376e=Math['sin'](_0x39c17a/0x2),_0x359514=Math[_0x32d1cd(0xaf)](_0x14e161/0x2),_0x28b7f4=Math[_0x32d1cd(0xbf)](_0x14e161/0x2);return{'x':_0x4dee33*_0x5de373*_0x359514-_0x31db00*_0x56376e*_0x28b7f4,'y':_0x31db00*_0x56376e*_0x359514+_0x4dee33*_0x5de373*_0x28b7f4,'z':_0x31db00*_0x5de373*_0x28b7f4-_0x4dee33*_0x56376e*_0x359514,'w':_0x31db00*_0x5de373*_0x359514+_0x4dee33*_0x56376e*_0x28b7f4};}function _0x2871(){const _0x3c6d84=['videoinput','canvas','mediaDevices','relativeFocalLength','requestedWidth','154rMxEVD','atan','log','Error\x20enumerating\x20devices:','Calibration\x20complete','update','1315832EBPTCd','sin','_fps','enumerateDevices','catch','921108sopIQH','8nAgSlS','getContext','HeadTracker','カメラ\x20','diagonalFov','cameraSelect','hypot','videoHeight','requestedHeight','filter','setOptions','textContent','error','getItem','unityInstance','Calibration\x20will\x20start\x20in\u00a0','innerText','text','disabled','value','3208tIQqxv','send','_calibration','\u00a0seconds.','multiFaceLandmarks','videoWidth','result','28249nJXvbZ','calibrationResult','618480NPAzwi','option','acos','ipd','sqrt','2406500vxndey','floor','deviceId','3siNSXi','592550VdDwSg','min','innerHTML','OnReceiveFaceData','forEach','3609zCCpGC','start','setItem','max','cos','length','getElementById','toFixed'];_0x2871=function(){return _0x3c6d84;};return _0x2871();}function eulerToQuaternion(_0x140d74,_0x5a1435,_0x2671ed){const _0x98fef=_0x52400d,_0x4e5329=_0x140d74*Math['PI']/0xb4,_0x26d1c5=_0x5a1435*Math['PI']/0xb4,_0x3c7de2=_0x2671ed*Math['PI']/0xb4,_0x998baf=Math[_0x98fef(0xaf)](_0x4e5329/0x2),_0x3165a3=Math[_0x98fef(0xbf)](_0x4e5329/0x2),_0x30d579=Math[_0x98fef(0xaf)](_0x26d1c5/0x2),_0x511f34=Math[_0x98fef(0xbf)](_0x26d1c5/0x2),_0x5bbb7f=Math[_0x98fef(0xaf)](_0x3c7de2/0x2),_0x4fa54a=Math['sin'](_0x3c7de2/0x2);return{'x':_0x3165a3*_0x30d579*_0x5bbb7f-_0x998baf*_0x511f34*_0x4fa54a,'y':_0x998baf*_0x511f34*_0x5bbb7f+_0x3165a3*_0x30d579*_0x4fa54a,'z':_0x998baf*_0x30d579*_0x4fa54a-_0x3165a3*_0x511f34*_0x5bbb7f,'w':_0x998baf*_0x30d579*_0x5bbb7f+_0x3165a3*_0x511f34*_0x4fa54a};}function calculateZmeters(_0x4cea96,_0x27b5ed,_0x3408ae,_0x1c2721,_0x1b05bc){const _0xc9aae0=_0x52400d,_0x15e7a1=normalize(_0x1b05bc),_0x1a2cf3={'x':0x0,'y':0x0,'z':0x1},_0x330c27=dot(_0x15e7a1,_0x1a2cf3),_0x3cd113=Math['acos'](Math['min'](Math[_0xc9aae0(0xae)](_0x330c27,-0x1),0x1)),_0x1a9b17=_0x3408ae*Math[_0xc9aae0(0xaf)](_0x3cd113),_0x3468ad=_0x1c2721*_0x1a9b17/(_0x4cea96*_0x27b5ed);return-_0x3468ad/0x3e8;}function getEyeCenter(_0x52ab5a,_0x7e015,_0x40b88f){const _0x108610=_0x52400d,_0xedfae6=(_0x52ab5a[_0x7e015]['x']+_0x52ab5a[_0x40b88f]['x'])/0x2*video[_0x108610(0x99)],_0x1b0840=(_0x52ab5a[_0x7e015]['y']+_0x52ab5a[_0x40b88f]['y'])/0x2*video[_0x108610(0xcb)];return{'x':_0xedfae6,'y':_0x1b0840};}const faceMesh=new FaceMesh({'locateFile':_0x139bc1=>'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/'+_0x139bc1});faceMesh[_0x52400d(0xce)]({'maxNumFaces':0x1,'refineLandmarks':!![],'minDetectionConfidence':0.5,'minTrackingConfidence':0.5}),faceMesh['onResults'](onResults);function startCamera(){const _0x1f51bb=_0x52400d;video=document[_0x1f51bb(0xb1)]('video'),canvas=document['getElementById']('output_canvas')||document[_0x1f51bb(0xb1)](_0x1f51bb(0xb4)),ctx=canvas[_0x1f51bb(0xc5)]('2d'),resultDiv=document[_0x1f51bb(0xb1)](_0x1f51bb(0x9a)),new Camera(video,{'onFrame':async()=>await faceMesh[_0x1f51bb(0xd9)]({'image':video}),'width':parseInt(localStorage[_0x1f51bb(0xd1)](_0x1f51bb(0xb7))),'height':parseInt(localStorage[_0x1f51bb(0xd1)]('requestedHeight')),'deviceId':localStorage[_0x1f51bb(0xd1)]('cameraSelect')})[_0x1f51bb(0xac)]();}window['addEventListener']('DOMContentLoaded',startCamera);function onResults(_0x30430a){const _0x47899a=_0x52400d;if(!_0x30430a[_0x47899a(0x98)]?.[_0x47899a(0xb0)])return;const _0x363eca=_0x30430a[_0x47899a(0x98)][0x0],_0x31c725=getEyeCenter(_0x363eca,0x182,0x176),_0x23550a=getEyeCenter(_0x363eca,0x9f,0x91);window['_calibration']['leftEye']=_0x31c725,window[_0x47899a(0xda)]['rightEye']=_0x23550a;const _0x4e120b=_0x31c725['x']-_0x23550a['x'],_0x2f8aa0=_0x31c725['y']-_0x23550a['y'],_0x4538e3=Math[_0x47899a(0xa1)](_0x4e120b*_0x4e120b+_0x2f8aa0*_0x2f8aa0),_0xe21225=sensorWidth/video['videoWidth'],_0x131300=video[_0x47899a(0x99)]/video[_0x47899a(0xcb)],_0x2c06d3={'x':_0x363eca[0x98]['x'],'y':_0x363eca[0x98]['y'],'z':_0x363eca[0x98]['z']},_0x968bdb={'x':_0x363eca[0x21]['x'],'y':_0x363eca[0x21]['y'],'z':_0x363eca[0x21]['z']},_0x304b1f={'x':_0x363eca[0x107]['x'],'y':_0x363eca[0x107]['y'],'z':_0x363eca[0x107]['z']},_0xe0648e={'x':(_0x968bdb['x']+_0x304b1f['x'])/0x2,'y':(_0x968bdb['y']+_0x304b1f['y'])/0x2,'z':(_0x968bdb['z']+_0x304b1f['z'])/0x2},_0x6fd009=normalize(subtract(_0xe0648e,_0x2c06d3)),_0x487a65=normalize(subtract(_0x304b1f,_0x968bdb)),_0x165137=normalize(cross(_0x6fd009,_0x487a65)),_0x52a24f=normalize(cross(_0x6fd009,_0x165137)),_0xec7e84=_0x6fd009,_0x3fdd95=_0x165137,_0x500f5c=[[_0x52a24f['x'],_0xec7e84['x'],_0x3fdd95['x']],[_0x52a24f['y'],_0xec7e84['y'],_0x3fdd95['y']],[_0x52a24f['z'],_0xec7e84['z'],_0x3fdd95['z']]];let _0x1bd6cd=matrixToQuaternion(_0x500f5c);const _0x2d92a4={'x':0x0,'y':0x0,'z':0x1,'w':0x0},_0x78e9b7=multiplyQuaternion(_0x1bd6cd,_0x2d92a4),_0x43ffe7=diagonalFov*Math[_0x47899a(0xaf)](Math[_0x47899a(0xb9)](0x1/_0x131300))*(Math['PI']/0xb4),_0x51e64a=diagonalFov*Math[_0x47899a(0xbf)](Math[_0x47899a(0xb9)](0x1/_0x131300))*(Math['PI']/0xb4),_0x18c390=((_0x31c725['x']+_0x23550a['x'])/0x2-video[_0x47899a(0x99)]/0x2)*_0x43ffe7/video[_0x47899a(0x99)],_0x2e8e9d=((_0x31c725['y']+_0x23550a['y'])/0x2-video[_0x47899a(0xcb)]/0x2)*-_0x51e64a/video[_0x47899a(0xcb)],_0x40fa21=eulerToQuaternion(_0x2e8e9d*(0xb4/Math['PI']),_0x18c390*(0xb4/Math['PI']),0x0),_0x1186b4=multiplyQuaternion(_0x78e9b7,_0x40fa21);let _0x34a6eb=calculateZmeters(_0x4538e3,_0xe21225,ipd,focalLength,_0x165137);_0x34a6eb=posZFilter[_0x47899a(0xbd)](_0x34a6eb);const _0x585a36=(_0x31c725['x']-video[_0x47899a(0x99)]/0x2)*_0xe21225/focalLength*_0x34a6eb,_0x3115ad=(_0x31c725['y']-video['videoHeight']/0x2)*_0xe21225/focalLength*_0x34a6eb,_0x5a60d4=(_0x23550a['x']-video['videoWidth']/0x2)*_0xe21225/focalLength*_0x34a6eb,_0x4bc039=(_0x23550a['y']-video[_0x47899a(0xcb)]/0x2)*_0xe21225/focalLength*_0x34a6eb,_0x2dc348=(_0x585a36+_0x5a60d4)/0x2,_0x56dbe7=(_0x3115ad+_0x4bc039)/0x2,_0x2003a3=posXFilter[_0x47899a(0xbd)](_0x2dc348),_0x479497=posYFilter[_0x47899a(0xbd)](_0x56dbe7),_0x30eb56=_0x34a6eb,_0x45ca31=quatXFilter['update'](_0x1186b4['x']),_0x16f8b6=quatYFilter[_0x47899a(0xbd)](_0x1186b4['y']),_0x5a497e=quatZFilter['update'](_0x1186b4['z']),_0x3d7b47=quatWFilter[_0x47899a(0xbd)](_0x1186b4['w']);resultDiv[_0x47899a(0xd4)]='Position:('+_0x2003a3['toFixed'](0x3)+',\x20'+_0x479497['toFixed'](0x3)+',\x20'+_0x30eb56[_0x47899a(0xb2)](0x3)+')\x0aRotation(quat):('+_0x45ca31[_0x47899a(0xb2)](0x3)+',\x20'+_0x16f8b6[_0x47899a(0xb2)](0x3)+',\x20'+_0x5a497e['toFixed'](0x3)+',\x20'+_0x3d7b47[_0x47899a(0xb2)](0x3)+')';if(document[_0x47899a(0xd2)]?.['SendMessage'])document['unityInstance']['SendMessage'](_0x47899a(0xc6),_0x47899a(0xa9),_0x2003a3[_0x47899a(0xb2)](0x3)+','+_0x479497['toFixed'](0x3)+','+_0x30eb56['toFixed'](0x3)+','+_0x45ca31[_0x47899a(0xb2)](0x3)+','+_0x16f8b6[_0x47899a(0xb2)](0x3)+','+_0x5a497e['toFixed'](0x3)+','+_0x3d7b47['toFixed'](0x3));}
+// Settings
+const sensorWidth = 1;
+const relativeFocalLength = parseFloat(localStorage.getItem('relativeFocalLength')) || 1;
+const focalLength = sensorWidth * relativeFocalLength;
+const ipd = parseFloat(localStorage.getItem('ipd')) || 65;
+const diagonalFov = parseFloat(localStorage.getItem('diagonalFov')) || 78;
+
+// DOM
+var video;
+var canvas;
+var ctx;
+var resultDiv;
+
+// Calibration storage
+window._calibration = { leftEye: null, rightEye: null };
+const calibration = {
+  startCalibration: function() {
+    const resultEl = document.getElementById('calibrationResult');
+    // Disable inputs
+    ['relativeFocalLength','diagonalFov'].forEach(id => document.getElementById(id).disabled = true);
+    let countdown = 10;
+    resultEl.textContent = `Calibration will start in ${countdown} seconds.`;
+    const timer = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        resultEl.textContent = `Calibration will start in ${countdown} seconds.`;
+      } else {
+        clearInterval(timer);
+        calibration.doCalibrate();
+      }
+    }, 1000);
+  },
+  doCalibrate: function() {
+    const resultEl = document.getElementById('calibrationResult');
+    const left = window._calibration.leftEye;
+    const right = window._calibration.rightEye;
+console.log(left + ":" + right);
+    if (!left || !right) {
+      resultEl.textContent = 'Eyes not detected. Please adjust the camera.';
+      ['relativeFocalLength','diagonalFov'].forEach(id => document.getElementById(id).disabled = false);
+      return;
+    }
+    const dx = left.x - right.x;
+    const dy = left.y - right.y;
+    const eyeDistancePixels = Math.hypot(dx, dy);
+console.log(eyeDistancePixels);
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    const pixelSize = sensorWidth / vw;
+    const distanceMeters = 0.5;
+    // Adjust focal length
+    const newFocal = (distanceMeters * 1000) * (eyeDistancePixels * pixelSize) / ipd;
+    document.getElementById('relativeFocalLength').value = newFocal.toFixed(3);
+console.log(newFocal);
+    // Adjust diagonal FOV
+    const censorEyeDist = pixelSize * eyeDistancePixels;
+    const ipdHFovDeg = Math.atan(censorEyeDist / 2 / newFocal) * 2 * (180/Math.PI);
+    const hFov = ipdHFovDeg * (vw / eyeDistancePixels);
+    const vFov = hFov * (vh / vw);
+    const dFov = Math.hypot(hFov, vFov);
+    document.getElementById('diagonalFov').value = Math.floor(dFov);
+    // Re-enable inputs
+    ['relativeFocalLength','diagonalFov'].forEach(id => document.getElementById(id).disabled = false);
+    resultEl.textContent = 'Calibration complete';
+  }
+};
+
+// Kalman filters
+class KalmanFilter {
+  constructor(Q,R,P,X){this.Q=Q;this.R=R;this.P=P;this.X=X;}
+  update(z){this.P+=this.Q;const K=this.P/(this.P+this.R);this.X+=K*(z-this.X);this.P=(1-K)*this.P;return this.X;}
+}
+const posXFilter=new KalmanFilter(0.05,0.05,10,0);
+const posYFilter=new KalmanFilter(0.05,0.05,10,0);
+const posZFilter=new KalmanFilter(0.05,0.5,10,0);
+const quatXFilter=new KalmanFilter(0.005,0.1,1,0);
+const quatYFilter=new KalmanFilter(0.005,0.1,1,0);
+const quatZFilter=new KalmanFilter(0.005,0.1,1,0);
+const quatWFilter=new KalmanFilter(0.005,0.1,1,1);
+
+function loadSettings() {
+  const settings = ['relativeFocalLength', 'ipd', 'diagonalFov', 'requestedWidth', 'requestedHeight', '_fps'];
+  settings.forEach(key => {
+    const stored = localStorage.getItem(key);
+    if (stored !== null) {
+      document.getElementById(key).value = stored;
+    }
+  });
+}
+function saveSettings() {
+  const settings = ['relativeFocalLength', 'ipd', 'diagonalFov', 'requestedWidth', 'requestedHeight', '_fps'];
+  settings.forEach(key => {
+    localStorage.setItem(key, document.getElementById(key).value);
+  });
+}
+
+// --- カメラ選択 ---
+function populateCameraSelect() {
+  const cameraSelect = document.getElementById('cameraSelect');
+  cameraSelect.innerHTML = "";
+  navigator.mediaDevices.enumerateDevices().then(devices => {
+    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+    videoDevices.forEach(device => {
+      const option = document.createElement('option');
+      option.value = device.deviceId;
+      option.text = device.label || `カメラ ${cameraSelect.length + 1}`;
+      cameraSelect.appendChild(option);
+    });
+  }).catch(error => {
+    console.error('Error enumerating devices:', error);
+  });
+}
+
+
+// Vector math
+function subtract(a, b) {
+  return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
+}
+function cross(a, b) {
+  return {
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x
+  };
+}
+function dot(a, b) {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+function length(v) {
+  return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+function normalize(v) {
+  const len = length(v);
+  return len === 0 ? { x: 0, y: 0, z: 0 } : { x: v.x/len, y: v.y/len, z: v.z/len };
+}
+function angleBetween(a, b) {
+  const nA = normalize(a);
+  const nB = normalize(b);
+  let cosTheta = dot(nA, nB);
+  cosTheta = Math.min(Math.max(cosTheta, -1), 1);
+  return Math.acos(cosTheta);
+}
+function matrixToQuaternion(m) {
+  const m00 = m[0][0], m01 = m[0][1], m02 = m[0][2];
+  const m10 = m[1][0], m11 = m[1][1], m12 = m[1][2];
+  const m20 = m[2][0], m21 = m[2][1], m22 = m[2][2];
+  let trace = m00 + m11 + m22;
+  let q = { x: 0, y: 0, z: 0, w: 1 };
+  if (trace > 0) {
+    let s = Math.sqrt(trace + 1.0) * 2;
+    q.w = 0.25 * s;
+    q.x = (m21 - m12) / s;
+    q.y = (m02 - m20) / s;
+    q.z = (m10 - m01) / s;
+  } else if ((m00 > m11) && (m00 > m22)) {
+    let s = Math.sqrt(1.0 + m00 - m11 - m22) * 2;
+    q.w = (m21 - m12) / s;
+    q.x = 0.25 * s;
+    q.y = (m01 + m10) / s;
+    q.z = (m02 + m20) / s;
+  } else if (m11 > m22) {
+    let s = Math.sqrt(1.0 + m11 - m00 - m22) * 2;
+    q.w = (m02 - m20) / s;
+    q.x = (m01 + m10) / s;
+    q.y = 0.25 * s;
+    q.z = (m12 + m21) / s;
+  } else {
+    let s = Math.sqrt(1.0 + m22 - m00 - m11) * 2;
+    q.w = (m10 - m01) / s;
+    q.x = (m02 + m20) / s;
+    q.y = (m12 + m21) / s;
+    q.z = 0.25 * s;
+  }
+  return q;
+}
+function multiplyQuaternion(q1, q2) {
+  return {
+    w: q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z,
+    x: q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+    y: q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
+    z: q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w
+  };
+}
+function eulerToQuaternion(eulerX, eulerY, eulerZ) {
+  const x = eulerX * Math.PI / 180;
+  const y = eulerY * Math.PI / 180;
+  const z = eulerZ * Math.PI / 180;
+  const c1 = Math.cos(x/2), s1 = Math.sin(x/2);
+  const c2 = Math.cos(y/2), s2 = Math.sin(y/2);
+  const c3 = Math.cos(z/2), s3 = Math.sin(z/2);
+  return {
+    x: s1 * c2 * c3 - c1 * s2 * s3,
+    y: c1 * s2 * c3 + s1 * c2 * s3,
+    z: c1 * c2 * s3 - s1 * s2 * c3,
+    w: c1 * c2 * c3 + s1 * s2 * s3
+  };
+}
+// --- Euler角（度単位）からクォータニオンに変換する関数 ---
+function eulerToQuaternion(eulerX, eulerY, eulerZ) {
+  const x = eulerX * Math.PI / 180;
+  const y = eulerY * Math.PI / 180;
+  const z = eulerZ * Math.PI / 180;
+  const c1 = Math.cos(x/2), s1 = Math.sin(x/2);
+  const c2 = Math.cos(y/2), s2 = Math.sin(y/2);
+  const c3 = Math.cos(z/2), s3 = Math.sin(z/2);
+  return {
+    x: s1 * c2 * c3 - c1 * s2 * s3,
+    y: c1 * s2 * c3 + s1 * c2 * s3,
+    z: c1 * c2 * s3 - s1 * s2 * c3,
+    w: c1 * c2 * c3 + s1 * s2 * s3
+  };
+}
+function calculateZmeters(eyeDistancePixels, pixelSize, ipd, focalLength, forwardVector) {
+  const normForward = normalize(forwardVector);
+  const cameraZAxis = { x: 0, y: 0, z: 1 };
+  const dotVal = dot(normForward, cameraZAxis);
+  const angle = Math.acos(Math.min(Math.max(dotVal, -1), 1));
+  const adjustedIpd = ipd * Math.cos(angle);
+  const ipdAdjustment = (focalLength * adjustedIpd) / (eyeDistancePixels * pixelSize);
+  return -ipdAdjustment / 1000;
+}
+function getEyeCenter(landmarks, idx1, idx2) {
+//console.log("getEyeCenter:" + landmarks + ":" + idx1 + ":" + landmarks.length);
+  const x = ((landmarks[idx1].x + landmarks[idx2].x) / 2) * video.videoWidth;
+  const y = ((landmarks[idx1].y + landmarks[idx2].y) / 2) * video.videoHeight;
+  return { x, y };
+}
+
+// MediaPipe FaceMesh setup
+const faceMesh=new FaceMesh({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${f}`});
+faceMesh.setOptions({maxNumFaces:1,refineLandmarks:true,minDetectionConfidence:0.5,minTrackingConfidence:0.5});
+faceMesh.onResults(onResults);
+
+// Camera start
+function startCamera(){
+  // DOM
+  video = document.getElementById('video');
+  canvas = document.getElementById('output_canvas') || document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  resultDiv = document.getElementById('result');
+
+  new Camera(video,{onFrame:async()=>await faceMesh.send({image:video}),width:parseInt(localStorage.getItem('requestedWidth')),height:parseInt(localStorage.getItem('requestedHeight')),deviceId:localStorage.getItem('cameraSelect')}).start();
+}
+window.addEventListener('DOMContentLoaded',startCamera);
+
+// onResults: exact same as index__.html
+function onResults(results){
+  if(!results.multiFaceLandmarks?.length) return;
+  const landmarks = results.multiFaceLandmarks[0];
+  
+  const leftEyeCenter = getEyeCenter(landmarks, 386, 374);
+  const rightEyeCenter = getEyeCenter(landmarks, 159, 145);
+  // Store for calibration
+  window._calibration.leftEye = leftEyeCenter;
+  window._calibration.rightEye = rightEyeCenter;
+  const dx = leftEyeCenter.x - rightEyeCenter.x;
+  const dy = leftEyeCenter.y - rightEyeCenter.y;
+  const eyeDistancePixels = Math.sqrt(dx * dx + dy * dy);
+  const pixelSize = sensorWidth / video.videoWidth;
+  const aspectRate = video.videoWidth / video.videoHeight;
+
+  const chin3D = { x: landmarks[152].x, y: landmarks[152].y, z: landmarks[152].z };
+  const leftEye3D = { x: landmarks[33].x, y: landmarks[33].y, z: landmarks[33].z };
+  const rightEye3D = { x: landmarks[263].x, y: landmarks[263].y, z: landmarks[263].z };
+  const eyeCenter3D = {
+    x: (leftEye3D.x + rightEye3D.x) / 2,
+    y: (leftEye3D.y + rightEye3D.y) / 2,
+    z: (leftEye3D.z + rightEye3D.z) / 2
+  };
+  const upVector = normalize(subtract(eyeCenter3D, chin3D));
+  const eyeToEyeVector = normalize(subtract(rightEye3D, leftEye3D));
+  const forwardVector = normalize(cross(upVector, eyeToEyeVector));
+
+  const xAxis = normalize(cross(upVector, forwardVector));
+  const yAxis = upVector;
+  const zAxis = forwardVector;
+  const rotationMatrix = [
+    [xAxis.x, yAxis.x, zAxis.x],
+    [xAxis.y, yAxis.y, zAxis.y],
+    [xAxis.z, yAxis.z, zAxis.z]
+  ];
+  let quaternion = matrixToQuaternion(rotationMatrix);
+  const rot180 = { x: 0, y: 0, z: 1, w: 0 };
+  const rotatedQuaternion = multiplyQuaternion(quaternion, rot180);
+
+  const horizontalFOV = diagonalFov * Math.cos(Math.atan(1 / aspectRate)) * (Math.PI / 180);
+  const verticalFOV   = diagonalFov * Math.sin(Math.atan(1 / aspectRate)) * (Math.PI / 180);
+  const angleX = (((leftEyeCenter.x + rightEyeCenter.x) / 2) - (video.videoWidth / 2)) * horizontalFOV / video.videoWidth;
+  const angleY = (((leftEyeCenter.y + rightEyeCenter.y) / 2) - (video.videoHeight / 2)) * -verticalFOV / video.videoHeight;
+
+  const rotationCorrection = eulerToQuaternion(angleY * (180/Math.PI), angleX * (180/Math.PI), 0);
+  const finalQuaternion = multiplyQuaternion(rotatedQuaternion, rotationCorrection);
+
+  let zMeters = calculateZmeters(eyeDistancePixels, pixelSize, ipd, focalLength, forwardVector);
+  zMeters = posZFilter.update(zMeters);
+
+  const leftEyeX = ((leftEyeCenter.x - video.videoWidth / 2) * pixelSize / focalLength) * zMeters;
+  const leftEyeY = ((leftEyeCenter.y - video.videoHeight / 2) * pixelSize / focalLength) * zMeters;
+  const rightEyeX = ((rightEyeCenter.x - video.videoWidth / 2) * pixelSize / focalLength) * zMeters;
+  const rightEyeY = ((rightEyeCenter.y - video.videoHeight / 2) * pixelSize / focalLength) * zMeters;
+  const eyeCenterX = (leftEyeX + rightEyeX) / 2;
+  const eyeCenterY = (leftEyeY + rightEyeY) / 2;
+
+  const filteredPosX = posXFilter.update(eyeCenterX);
+  const filteredPosY = posYFilter.update(eyeCenterY);
+  const filteredPosZ = zMeters;
+  const filteredQuatX = quatXFilter.update(finalQuaternion.x);
+  const filteredQuatY = quatYFilter.update(finalQuaternion.y);
+  const filteredQuatZ = quatZFilter.update(finalQuaternion.z);
+  const filteredQuatW = quatWFilter.update(finalQuaternion.w);
+
+  //ProcessResult(filteredPosX, filteredPosY, filteredPosZ,
+  //              filteredQuatX, filteredQuatY, filteredQuatZ, filteredQuatW);
+
+
+  resultDiv.innerText=`Position:(${filteredPosX.toFixed(3)}, ${filteredPosY.toFixed(3)}, ${filteredPosZ.toFixed(3)})\nRotation(quat):(${filteredQuatX.toFixed(3)}, ${filteredQuatY.toFixed(3)}, ${filteredQuatZ.toFixed(3)}, ${filteredQuatW.toFixed(3)})`;
+  if(document.unityInstance?.SendMessage) document.unityInstance.SendMessage('HeadTracker','OnReceiveFaceData',`${filteredPosX.toFixed(3)},${filteredPosY.toFixed(3)},${filteredPosZ.toFixed(3)},${filteredQuatX.toFixed(3)},${filteredQuatY.toFixed(3)},${filteredQuatZ.toFixed(3)},${filteredQuatW.toFixed(3)}`);
+}
