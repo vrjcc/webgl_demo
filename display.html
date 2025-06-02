@@ -76,6 +76,7 @@
   <div id="toggle-controls">
     <button id="toggle-size-btn">小さくする</button>
     <button id="toggle-fullscreen-btn">フルスクリーンオン</button>
+    <button id="help-btn">ヘルプ（準備中）</button>
   </div>
 
   <!-- 任意のヘッディングや設定への戻りボタン -->
@@ -150,6 +151,12 @@
           console.error(`フルスクリーンの解除に失敗しました: ${err.message}`);
         });
       }
+    });
+
+    // ヘルプボタンの処理
+    const helpBtn = document.getElementById('help-btn');
+    helpBtn.addEventListener('click', function() {
+      window.open("https://www.youtube.com/@portalgraph", "_blank");
     });
 
     // Unity WebGL Loader
