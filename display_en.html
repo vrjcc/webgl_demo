@@ -14,21 +14,9 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
       background: #f0f0f0;
-    }
-    /* 切り替え用ボタンを画面左上に配置 */
-    #toggle-controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 10000;
-    }
-    #toggle-controls button {
-      padding: 8px 12px;
-      font-size: 14px;
-      cursor: pointer;
-      margin-right: 10px;
     }
     /* Unity コンテナ：デフォルトはブラウザ全体に表示 */
     #unity-container.fullsize {
@@ -38,18 +26,18 @@
       width: 100vw;
       height: 100vh;
       background: #000;
+      z-index: 100;
     }
     /* 小さい表示用：例として 960×600、ウィンドウ中央に配置 */
     #unity-container.small {
-      position: absolute;
-      width: 960px;
-      height: 600px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      position: relative;
+      width: 90%;
+      height: 90%;
       background: #000;
       border: 2px solid #ccc;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      z-index: 0;
+      margin: 0% 5% 5% 5%;
     }
     /* Unity キャンバスは親要素にフィット */
     #unity-canvas {
@@ -69,94 +57,89 @@
       background-color: #4caf50;
       width: 0%;
     }
+    /* フルスクリーンボタンを画面左上に配置 */
+    #fullscreen-btn {
+      z-index: 10;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #message-text {
+      margin:20px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
-  <!-- 切り替え用ボタン（サイズ切替とフルスクリーン切替の両方を配置） -->
-  <div id="toggle-controls">
-    <button id="toggle-size-btn">Minimize</button>
-    <button id="toggle-fullscreen-btn">Full screen ON</button>
-    <button id="help-btn">Help</button>
+  <h1 style="margin:20px;">Persona Portal Kagerou WebGL</h1>
+  <div style="margin:20px; position: relative; white-space: pre;">
+<h3>How to play:</h3>
+<a href="https://www.youtube.com/watch?v=rbYDKoHD3GA" target="_blank">Tutorial video</a>
+Please configure the camera when launching for the first time or after changing the camera.<button onclick="window.location='settings.html'">Camera Settings</button>
+On the settings screen, enter the screen size and the camera position relative to the screen (input is only possible when not in full-screen mode on smartphones and tablets).
+By wearing commercially available red-blue 3D glasses and looking at the screen, a 3D space will appear that you can peek into from any angle.
+<a href="https://www.amazon.co.jp/dp/B08D6HM397?ref_=cm_sw_r_cp_ud_dp_VX6RYTV9MRAFPN6XV8GY">Recommended 3D glasses</a>
+
+<button id="fullscreen-btn">Please enjoy in full-screen mode.</button>
   </div>
 
-  <!-- 任意のヘッディングや設定への戻りボタン -->
-  <h1 style="margin:20px;">Persona Portal WebGL</h1>
-  <button onclick="window.location='settings_.html'" style="margin:20px;">Return to settings</button>
+
+  <!-- Unity WebGL コンテナ-->
+  <div id="unity-container" class="small">
+    <canvas id="unity-canvas" style="display: block;"></canvas>
+    
+    <div id="unity-loading-bar">
+      <div id="unity-progress-bar-full"></div>
+    </div>
+    <div id="unity-warning"></div>
+    <div id="unity-footer"></div>
+ </div>
 
   <!-- MediaPipe 関連（任意表示） -->
-  <form id="paramForm" style="margin:20px;">
+  <form id="paramForm" style="margin:20px; display: none;">
     <input type="hidden" id="relativeFocalLength" value="5">
     <input type="hidden" id="ipd" value="65">
     <input type="hidden" id="diagonalFov" value="78">
     <input type="hidden" id="requestedWidth" value="640">
     <input type="hidden" id="requestedHeight" value="360">
     <input type="hidden" id="_fps" value="30">
-    <select id="cameraSelect"></select>
+    <select id="cameraSelect" style="display: none;"></select>
   </form>
-  <div id="videoContainer" style="margin:20px; width:640px; height:360px; border:1px solid #ccc; position:relative;">
+  <div id="videoContainer" style="display: inline-block; margin:20px; border:1px solid #ccc; position:relative;">
     <video id="video" playsinline></video>
-    <canvas id="output_canvas"></canvas>
+    <canvas id="output_canvas" style="display: none;"></canvas>
   </div>
-  <div id="result" style="margin:20px;">result</div>
-
-  <!-- Unity WebGL コンテナ（初期状態は全体表示） -->
-  <div id="unity-container" class="fullsize">
-    <canvas id="unity-canvas"></canvas>
-    <div id="unity-loading-bar">
-      <div id="unity-progress-bar-full"></div>
-    </div>
-    <div id="unity-warning"></div>
-    <div id="unity-footer"></div>
-  </div>
+  <div id="result" style="margin:20px;">Result Area</div>
 
   <script>
+    cameraSettingUrl = "settings_en.html";
+    helpUrl = "https://www.youtube.com/watch?v=rbYDKoHD3GA";
+    const unityContainer = document.getElementById('unity-container');
+    
+    if(!localStorage.getItem('ipd')) {
+      window.location = cameraSettingUrl;
+    }
+    
     // 共通関数で設定読み込みとカメラ起動
     loadSettings();
     startCamera();
 
-    // 切り替え用ボタン（サイズ切替）の処理
-    const toggleBtn = document.getElementById('toggle-size-btn');
-    const unityContainer = document.getElementById('unity-container');
-    let isFullSize = true;
-    toggleBtn.addEventListener('click', function() {
-      if (isFullSize) {
-        // 現在全体表示 → 小さいサイズに切り替え
-        unityContainer.classList.remove('fullsize');
-        unityContainer.classList.add('small');
-        toggleBtn.textContent = '全体に戻す';
-      } else {
-        // 小さいサイズ → 全体表示に戻す
-        unityContainer.classList.remove('small');
-        unityContainer.classList.add('fullsize');
-        toggleBtn.textContent = '小さくする';
-      }
-      isFullSize = !isFullSize;
+    document.addEventListener('fullscreenchange', () => {
+      const isFullscreen = !!document.fullscreenElement;
+      const fullscreenBtn = document.getElementById('fullscreen-btn');
+      fullscreenBtn.style.display = isFullscreen ? 'none' : 'block';
     });
 
-    // フルスクリーン切替用ボタンの処理
-    const toggleFullscreenBtn = document.getElementById('toggle-fullscreen-btn');
-    toggleFullscreenBtn.addEventListener('click', function() {
+    // フルスクリーンボタンの処理
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    fullscreenBtn.addEventListener('click', function() {
       if (!document.fullscreenElement) {
         // フルスクリーン表示に切り替え
         unityContainer.requestFullscreen().then(() => {
           toggleFullscreenBtn.textContent = 'フルスクリーンオフ';
         }).catch(err => {
-          console.error(`フルスクリーンの開始に失敗しました: ${err.message}`);
-        });
-      } else {
-        // フルスクリーン表示の解除
-        document.exitFullscreen().then(() => {
-          toggleFullscreenBtn.textContent = 'フルスクリーンオン';
-        }).catch(err => {
-          console.error(`フルスクリーンの解除に失敗しました: ${err.message}`);
+          console.error(`Failed to start full screen mode: ${err.message}`);
         });
       }
-    });
-
-    // ヘルプボタンの処理
-    const helpBtn = document.getElementById('help-btn');
-    helpBtn.addEventListener('click', function() {
-      window.open("https://www.youtube.com/watch?v=rbYDKoHD3GA", "_blank");
     });
 
     // Unity WebGL Loader
